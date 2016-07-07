@@ -65,7 +65,7 @@ type MySqlDialect struct{}
 
 func (m MySqlDialect) createVersionTableSql() string {
 	return `CREATE TABLE goose_db_version (
-                id serial NOT NULL,
+                id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE,
                 version_id bigint NOT NULL,
                 is_applied boolean NOT NULL,
                 tstamp timestamp NULL default now(),
