@@ -14,7 +14,7 @@ import (
 var flagPath = flag.String("path", "db", "folder containing db info")
 var flagEnv = flag.String("env", "development", "which DB environment to use")
 var flagPgSchema = flag.String("pgschema", "", "which postgres-schema to migrate (default = none)")
-var flagMigrationsPath = flag.String("migrations", "", "folder containing db migrations (default = none)")
+var flagMigrationsPath = flag.String("migrations", "", "folder containing db migrations (default = [path]/migrations)")
 
 // helper to create a DBConf from the given flags
 func dbConfFromFlags() (dbconf *goose.DBConf, err error) {
