@@ -34,7 +34,8 @@ func NewDBConf(p, env string, pgschema string) (*DBConf, error) {
 
 	f, err := yaml.ReadFile(cfgFile)
 	if err != nil {
-		cfgFile = filepath.Join("etc", "dbconf.yml")
+		p = os.Getenv("DBCONF_DIRECTORY")
+		cfgFile = filepath.Join(p, "dbconf.yml")
 		f, err = yaml.ReadFile(cfgFile)
 		if err != nil {
 			return nil, err
