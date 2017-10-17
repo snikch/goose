@@ -35,7 +35,6 @@ func NewDBConf(p, env string, pgschema string) (*DBConf, error) {
 	f, err := yaml.ReadFile(cfgFile)
 	if err != nil {
 		return nil, err
-
 	}
 
 	drv, err := f.Get(fmt.Sprintf("%s.driver", env))
