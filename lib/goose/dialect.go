@@ -19,6 +19,8 @@ func dialectByName(d string) SqlDialect {
 		return &PostgresDialect{}
 	case "mysql":
 		return &MySqlDialect{}
+	case "redshift":
+		return &RedshiftDialect{}
 	}
 
 	return nil
@@ -85,6 +87,35 @@ func (m MySqlDialect) dbVersionQuery(db *sql.DB) (*sql.Rows, error) {
 	// in which case we'll try to create it.
 	if err != nil {
 		return nil, ErrTableDoesNotExist
+	}
+
+	return rows, err
+}
+
+////////////////////////////
+// Redshift
+////////////////////////////
+
+type RedshiftDialect struct{}
+
+func (rs RedshiftDialect) createVersionTableSql() string {
+	return `CREATE TABLE goose_db_version (
+                id integer NOT NULL identity(1, 1),
+                version_id bigint NOT NULL,
+                is_applied boolean NOT NULL,
+                tstamp timestamp NULL default sysdate,
+                PRIMARY KEY(id)
+            );`
+}
+
+func (rs RedshiftDialect) insertVersionSql() string {
+	return "INSERT INTO goose_db_version (version_id, is_applied) VALUES ($1, $2);"
+}
+
+func (rs RedshiftDialect) dbVersionQuery(db *sql.DB) (*sql.Rows, error) {
+	rows, err := db.Query("SELECT version_id, is_applied from goose_db_version ORDER BY id DESC")
+	if err != nil {
+		return nil, err
 	}
 
 	return rows, err
