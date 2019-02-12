@@ -2,6 +2,8 @@ package goose
 
 import (
 	"database/sql"
+
+	"github.com/lib/pq"
 )
 
 // SqlDialect abstracts the details of specific SQL dialects
@@ -114,6 +116,13 @@ func (rs RedshiftDialect) insertVersionSql() string {
 
 func (rs RedshiftDialect) dbVersionQuery(db *sql.DB) (*sql.Rows, error) {
 	rows, err := db.Query("SELECT version_id, is_applied from goose_db_version ORDER BY id DESC")
+	if err, ok := err.(*pq.Error); ok {
+		if err.Code == "42P01" {
+			// pq error: undefined_table
+			return nil, ErrTableDoesNotExist
+		}
+	}
+
 	if err != nil {
 		return nil, err
 	}
