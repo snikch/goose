@@ -11,7 +11,7 @@ import (
 type SqlDialect interface {
 	createVersionTableSql() string // sql string to create the goose_db_version table
 	insertVersionSql() string      // sql string to insert the initial version table row
-	dbVersionQuery(db *sql.DB) (*sql.Rows, error)
+	DBVersionQuery(db *sql.DB) (*sql.Rows, error)
 }
 
 // drivers that we don't know about can ask for a dialect by name
@@ -48,7 +48,7 @@ func (pg PostgresDialect) insertVersionSql() string {
 	return "INSERT INTO goose_db_version (version_id, is_applied) VALUES ($1, $2);"
 }
 
-func (pg PostgresDialect) dbVersionQuery(db *sql.DB) (*sql.Rows, error) {
+func (pg PostgresDialect) DBVersionQuery(db *sql.DB) (*sql.Rows, error) {
 	rows, err := db.Query("SELECT version_id, is_applied from goose_db_version ORDER BY id DESC")
 
 	// XXX: check for postgres specific error indicating the table doesn't exist.
@@ -81,7 +81,7 @@ func (m MySqlDialect) insertVersionSql() string {
 	return "INSERT INTO goose_db_version (version_id, is_applied) VALUES (?, ?);"
 }
 
-func (m MySqlDialect) dbVersionQuery(db *sql.DB) (*sql.Rows, error) {
+func (m MySqlDialect) DBVersionQuery(db *sql.DB) (*sql.Rows, error) {
 	rows, err := db.Query("SELECT version_id, is_applied from goose_db_version ORDER BY id DESC")
 
 	// XXX: check for mysql specific error indicating the table doesn't exist.
@@ -114,7 +114,7 @@ func (rs RedshiftDialect) insertVersionSql() string {
 	return "INSERT INTO goose_db_version (version_id, is_applied) VALUES ($1, $2);"
 }
 
-func (rs RedshiftDialect) dbVersionQuery(db *sql.DB) (*sql.Rows, error) {
+func (rs RedshiftDialect) DBVersionQuery(db *sql.DB) (*sql.Rows, error) {
 	rows, err := db.Query("SELECT version_id, is_applied from goose_db_version ORDER BY id DESC")
 	if err, ok := err.(*pq.Error); ok {
 		if err.Code == "42P01" {

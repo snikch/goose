@@ -193,7 +193,7 @@ func NumericComponent(name string) (int64, error) {
 // Create and initialize the DB version table if it doesn't exist.
 func EnsureDBVersion(conf *DBConf, db *sql.DB) (int64, error) {
 
-	rows, err := conf.Driver.Dialect.dbVersionQuery(db)
+	rows, err := conf.Driver.Dialect.DBVersionQuery(db)
 	if err != nil {
 		if err == ErrTableDoesNotExist {
 			return 0, createVersionTable(conf, db)
